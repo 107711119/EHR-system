@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <style type="text/css">
+        button {
+            height: 43px;
+            width: 140px;
+        }
+        
+        #mytable {
+            width: 100%;
+        }
+        
+        textarea {
+            height: 800px;
+            /*高度填充*/
+            width: 80%;
+            padding: 0;
+            /*防止textarea超過td邊框*/
+            vertical-align: bottom;
+            /*chrome的td有margin-top情況 用此CSS調整*/
+            /*border: none; /*border用td的*/
+        }
+    </style>
+    <script src="setting.js"></script>
+    <script src="HTTP2019.js"></script>
+    <script>
+        var questionnaireObj = {
+            "resourceType": "QuestionnaireResponse",
+            "status": "completed",
+            "subject": {
+                "reference": "Practioner/"
+            },
+            /*"authored": "2020-02-17T12:20:17.1151Z",*/
+            "item": [{
+                "linkId": "1",
+                "text": "介面層次清晰",
+                "answer": [{
+                    //"disply": "非常滿意",
+                    "valueInteger": 5
+                }]
+            }, {
+                "linkId": "2",
+                "text": "閱讀、排版形式優良",
+                "answer": [{
+                    "valueInteger": 0
+                }]
+            }, {
+                "linkId": "3",
+                "text": "符合需求",
+                "answer": [{
+                    "valueInteger": 0
+                }]
+            }, {
+                "linkId": "4",
+                "text": "綜合評分",
+                "answer": [{
+                    "valueInteger": 0
+                }]
+            }]
+        };
+
+        function postQuestionnaire() {
+
+            var subRef = "Practioner/";
+            questionnaireObj.subject.reference = subRef + document.getElementById("practionerid").value;
+
+            //介面層次清晰
+            if (document.getElementById("rd_speed_1_5").checked == true) {
+                questionnaireObj.item[0].answer[0].valueInteger = document.getElementById("rd_speed_1_5").value;
+                //myObj.item[0].answer[0].valueInteger = 4;
+                //myObj.item[0].answer[0].disply = document.getElementById("rd_speed_1_5").value;  x
+            }
+            if (document.getElementById("rd_speed_1_4").checked == true) {
+                questionnaireObj.item[0].answer[0].valueInteger = 4;
+            }
+            if (document.getElementById("rd_speed_1_3").checked == true) {
+                questionnaireObj.item[0].answer[0].valueInteger = 3;
+            }
+            if (document.getElementById("rd_speed_1_2").checked == true) {
+                questionnaireObj.item[0].answer[0].valueInteger = 2;
+            }
+            if (document.getElementById("rd_speed_1_1").checked == true) {
+                questionnaireObj.item[0].answer[0].valueInteger = 1;
+            }
+
+
+            //2.閱讀
+            if (document.getElementById("rd_visual_2_5").checked == true) {
+                questionnaireObj.item[1].answer[0].valueInteger = document.getElementById("rd_visual_2_5").value;
+            }
+            if (document.getElementById("rd_visual_2_4").checked == true) {
+                questionnaireObj.item[1].answer[0].valueInteger = 4;
+            }
+            if (document.getElementById("rd_visual_2_3").checked == true) {
+                questionnaireObj.item[1].answer[0].valueInteger = 3;
+            }
+            if (document.getElementById("rd_visual_2_2").checked == true) {
+                questionnaireObj.item[1].answer[0].valueInteger = 2;
+            }
+            if (document.getElementById("rd_visual_2_1").checked == true) {
+                questionnaireObj.item[1].answer[0].valueInteger = 1;
+            }
+
+            //3.需求
+            if (document.getElementById("rd_need_3_5").checked == true) {
+                questionnaireObj.item[2].answer[0].valueInteger = document.getElementById("rd_need_3_5").value;
+            }
+            if (document.getElementById("rd_need_3_4").checked == true) {
+                questionnaireObj.item[2].answer[0].valueInteger = 4;
+            }
+            if (document.getElementById("rd_need_3_3").checked == true) {
+                questionnaireObj.item[2].answer[0].valueInteger = 3;
+            }
+            if (document.getElementById("rd_need_3_2").checked == true) {
+                questionnaireObj.item[2].answer[0].valueInteger = 2;
+            }
+            if (document.getElementById("rd_need_3_1").checked == true) {
+                questionnaireObj.item[2].answer[0].valueInteger = 1;
+            }
+
+
+            //4.綜合 
+            if (document.getElementById("rd_sum_4_5").checked == true) {
+                questionnaireObj.item[3].answer[0].valueInteger = document.getElementById("rd_sum_4_5").value;
+            }
+            if (document.getElementById("rd_sum_4_4").checked == true) {
+                questionnaireObj.item[3].answer[0].valueInteger = 4;
+            }
+            if (document.getElementById("rd_sum_4_3").checked == true) {
+                questionnaireObj.item[3].answer[0].valueInteger = 3;
+            }
+            if (document.getElementById("rd_sum_4_2").checked == true) {
+                questionnaireObj.item[3].answer[0].valueInteger = 2;
+            }
+            if (document.getElementById("rd_sum_4_1").checked == true) {
+                questionnaireObj.item[3].answer[0].valueInteger = 1;
+            }
+
+
+            var jsonStr = JSON.stringify(questionnaireObj); //將myObj中的內容轉換成JSON格式
+            alert(jsonStr);
+
+            var apiURL;
+            apiURL = FHIRrootURL + "/QuestionnaireResponse";
+            HTTPPostData(apiURL, jsonStr); //將網址及轉成JSON格式的myObj傳入副函式中(在HTTR2019.js中)
+
+        }
+
+        function clearQuestionnaire() {
+            var Total_Obj = document.getElementsByTagName("input");
+            // var question=document.getElementsByName("qtext");
+            for (var k = 0; k < Total_Obj.length; k++) {
+                if (Total_Obj[k].type == "radio") {
+                    if (Total_Obj[k].checked) {
+                        Total_Obj[k].checked = false; //將所有radio改成未選擇的狀態
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body style="height:780px" align="left">
+    <p>
+        <h1><b><center>EHR System</center></b></h1>
+    </p>
+    <table id="mytable">
+        <!--<table id="mytable" style="border:3px #FFAC55 dashed;padding:5px;" rules="all" cellpadding='5' ;>-->
+        <tr>
+            <td>
+                &nbsp;<b>Create Questitionnaire</b><br><br>
+            </td>
+        </tr>
+        <tr>
+            <td>PractionerID：
+                <input type="text" id="practionerid">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                1.此介面層次清晰
+                <div>
+                    <input type="radio" name="rd_speed" id="rd_speed_1_5" value="5" text="非常滿意" />5 非常滿意&nbsp;&nbsp;
+                    <br><input type="radio" name="rd_speed" id="rd_speed_1_4" value="4" />4 滿意&nbsp;&nbsp;
+                    <br><input type="radio" name="rd_speed" id="rd_speed_1_3" value="3" />3 普通&nbsp;&nbsp;
+                    <br><input type="radio" name="rd_speed" id="rd_speed_1_2" value="2" />2 不滿意&nbsp;&nbsp;
+                    <br><input type="radio" name="rd_speed" id="rd_speed_1_1" value="1" />1 非常不滿意&nbsp;&nbsp;
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                2.閱讀、排版形式優良
+                <div>
+                    <input type="radio" name="rd_visual" id="rd_visual_2_5" value="5" text="非常滿意" />5非常滿意
+                    <br><input type="radio" name="rd_visual" id="rd_visual_2_4" value="4" />4 滿意
+                    <br><input type="radio" name="rd_visual" id="rd_visual_2_3" value="3" />3 普通
+                    <br><input type="radio" name="rd_visual" id="rd_visual_2_2" value="2" />2 不滿意
+                    <br><input type="radio" name="rd_visual" id="rd_visual_2_1" value="1" />1 非常不滿意
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                3.符合需求
+                <div>
+                    <input type="radio" name="rd_need" id="rd_need_3_5" value="5" text="非常滿意" />5非常滿意
+                    <br><input type="radio" name="rd_need" id="rd_need_3_4" value="4" />4 滿意
+                    <br><input type="radio" name="rd_need" id="rd_need_3_3" value="3" />3 普通
+                    <br><input type="radio" name="rd_need" id="rd_need_3_2" value="2" />2 不滿意
+                    <br><input type="radio" name="rd_need" id="rd_need_3_1" value="1" />1 非常不滿意
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                4.綜合評分
+                <div>
+                    <input type="radio" name="rd_sum" id="rd_sum_4_5" value="5" text="非常滿意" />5非常滿意
+                    <br><input type="radio" name="rd_sum" id="rd_sum_4_4" value="4" />4 滿意
+                    <br><input type="radio" name="rd_sum" id="rd_sum_4_3" value="3" />3 普通
+                    <br><input type="radio" name="rd_sum" id="rd_sum_4_2" value="2" />2 不滿意
+                    <br><input type="radio" name="rd_sum" id="rd_sum_4_1" value="1" />1 非常不滿意
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="Button1" onclick="postQuestionnaire()" type="button" value="postData" />&emsp;&emsp;
+                <input id="btnClear" onclick="clearQuestionnaire" type="button" value="clearData" />
+            </td>
+        </tr>
+
+
+    </table>
+
+</body>
+
+</html>

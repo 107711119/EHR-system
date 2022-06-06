@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<header>
+
+</header>
+
+<style type="text/css">
+    button {
+        height: 43px;
+        width: 140px;
+    }
+    
+    #mytable {
+        width: 100%;
+    }
+    
+    #mytable2 {
+        width: 100%;
+    }
+    
+    textarea {
+        height: 100%;
+        /*高度填充*/
+        width: 50%;
+        padding: 0;
+        /*防止textarea超過td邊框*/
+        vertical-align: bottom;
+        /*chrome的td有margin-top情況 用此CSS調整*/
+        /*border: none; /*border用td的*/
+    }
+</style>
+
+<body style="height:780px" align="center">
+
+    <body style="height:780px" align="center">
+        <p>
+            <h1><b><center>EHR System</center></b></h1>
+        </p>
+        <!--<table id="mytable" style="border:3px #FFAC55 dashed;padding:5px;" rules="all" cellpadding='5' ;>--->
+        <table id="mytable">
+            <tr>
+                <td>
+                    <h3>建立病人：
+                        <a href="ehr_create_patient.html">Create Patient</a>&emsp;&nbsp;&nbsp;
+                    </h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Create建議施打的疫苗：
+                        <a href="ehr_check_patient.html">ImmunizationRecommendation</a>
+                    </h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Create評估是否施打疫苗：
+                        <a href="ehr_create_immunizationEvaluation.html">Create ImmunizationEvaluation</a>&nbsp;
+                    </h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Create施打疫苗事件：
+                        <a href="ehr_create_immunization.html">Create Immunization</a>&emsp;&emsp;&nbsp;&nbsp;
+                    </h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>&emsp;&emsp;製作疫苗資料：
+                        <a href="e4.html">Create Bundle-document</a>
+                    </h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>
+                        查詢民眾身體狀況：
+                        <a href="https://tzfhir.ml/fhir/Condition?patient=">查詢</a>
+                    </h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;填寫問卷：
+                        <a href="ehr_create_questionnaireResponse.html">Create questionnaireResponse</a>
+                    </h3>
+                </td>
+            </tr>
+        </table>
+    </body>
+
+</html>

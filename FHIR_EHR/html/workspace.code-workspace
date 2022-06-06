@@ -1,0 +1,34 @@
+{
+    "folders": [
+		{
+			"path": "..\\..\\EHR system"
+		},
+		{
+			"path": ".."
+		},
+		{
+			"path": "..\\..\\FHIR_PHR2"
+		},
+		{
+			"path": "..\\..\\MITW2021-WG3"
+		},
+		{
+			"path": "..\\..\\new PHR"
+		},
+		{
+			"path": "..\\..\\PHR system"
+		},
+		{
+			"path": "..\\..\\platform_login_system"
+		},
+		{
+			"path": "..\\..\\Project"
+		},
+		{
+			"path": "..\\..\\SimpleQuerystring"
+		}
+	],
+    "settings": {
+        "liveServer.settings.multiRootWorkspaceName": "FHIR_EMR-main"
+    }
+}

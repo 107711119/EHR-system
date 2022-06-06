@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <style type="text/css">
+        button {
+            height: 43px;
+            width: 140px;
+        }
+        
+        #mytable {
+            width: 100%;
+        }
+        
+        textarea {
+            height: 100%;
+            /*高度填充*/
+            width: 50%;
+            padding: 0;
+            /*防止textarea超過td邊框*/
+            vertical-align: bottom;
+            /*chrome的td有margin-top情況 用此CSS調整*/
+            /*border: none; /*border用td的*/
+        }
+    </style>
+    <script src="setting.js"></script>
+    <script src="HTTP2019.js"></script>
+    <script>
+        function postPatient() {
+            patientObj.identifier[0].value = document.getElementById("patientidentifier").value;
+            patientObj.name[0].text = document.getElementById("patientname").value;
+            patientObj.birthDate = document.getElementById("birthDate").value;
+            patientObj.managingOrganization.reference = "Organization/" + document.getElementById("patientorganizationid").value;
+
+            var jsonStr = JSON.stringify(patientObj);
+            alert(jsonStr);
+
+            var apiURL;
+            apiURL = FHIRrootURL + '/' + "Patient";
+            alert(apiURL);
+            HTTPPostData(apiURL, jsonStr);
+            //postResource(apiURL, jsonStr);
+        }
+
+        function searchPatient() {
+            var patientid = document.getElementById("patientid").value;
+            var apiURL = FHIRrootURL + '/Patient/' + patientid;
+            //clearAllTextbox();
+            HTTPGetData(apiURL, manageResponseRet, 1)
+        }
+
+        function manageResponseRet() {
+            var aa = document.getElementById("patientid").value;
+            //document.getElementById("patientid").value = ret;
+
+            if (JSON.parse(ret).id != aa) {
+                alert("Patient not found!");
+            } else {
+                window.open("ehr_create_immunizationRecommendation.html");
+            }
+        }
+    </script>
+</head>
+
+<body style="height:780px" align="center">
+    <p>
+        <h1><b><center>EHR System</center></b></h1>
+    </p>
+
+    <table id="mytable">
+        <tr>
+            <td>
+                <p>Patient ID:
+                    <input type="text" id="patientid">&nbsp;&nbsp;&nbsp;
+                    <input type="button" id="btnsearchpatient" onclick="searchPatient()" value="Enter">
+                </p>
+            </td>
+        </tr>
+
+    </table>
+</body>
+
+</html>

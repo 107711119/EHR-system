@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <style type="text/css">
+        button {
+            height: 43px;
+            width: 140px;
+        }
+        
+        #mytable {
+            width: 100%;
+        }
+        
+        #mytable2 {
+            width: 100%;
+        }
+        
+        textarea {
+            height: 100%;
+            /*高度填充*/
+            width: 50%;
+            padding: 0;
+            /*防止textarea超過td邊框*/
+            vertical-align: bottom;
+            /*chrome的td有margin-top情況 用此CSS調整*/
+            /*border: none; /*border用td的*/
+        }
+    </style>
+    <script src="setting.js"></script>
+    <script src="HTTP2019.js"></script>
+
+    <script>
+        var imuRecommendationObj = {
+            "resourceType": "ImmunizationRecommendation",
+            "identifier": [{
+                "system": "urn:ietf:rfc:3986",
+                "value": "urn:oid:1.3.6.1.4.1.21367.2005.3.7.1235"
+            }],
+            "patient": {
+                "reference": "Patient/2879043"
+            },
+            "date": "2015-02-09T11:04:15.817-05:00",
+            "authority": {
+                "reference": "Organization/2879043"
+            },
+            "recommendation": [{
+                "vaccineCode": [{
+                    "coding": [{
+                        "system": "http://snomed.info/sct",
+                        "code": "14745005",
+                        "display": "Hepatitis A vaccine"
+                    }]
+                }],
+                "forecastStatus": {
+                    "text": "Not Complete"
+                },
+                "dateCriterion": [{
+                    "code": { /*0*/
+                        "coding": [{
+                            "system": "http://example.org/fhir/CodeSystem/immunization-recommendation-date-criterion",
+                            "code": "earliest",
+                            "display": "Earliest Date"
+                        }]
+                    },
+                    "value": "2015-12-01T00:00:00-05:00"
+                }, {
+                    "code": { /*1*/
+                        "coding": [{
+                            "system": "http://example.org/fhir/CodeSystem/immunization-recommendation-date-criterion",
+                            "code": "recommended",
+                            "display": "Recommended"
+                        }]
+                    },
+                    "value": "2015-12-01T00:00:00-05:00"
+                }, {
+                    "code": {
+                        "coding": [{
+                            "system": "http://example.org/fhir/CodeSystem/immunization-recommendation-date-criterion",
+                            "code": "overdue",
+                            "display": "Past Due Date"
+                        }]
+                    },
+                    "value": "2016-12-28T00:00:00-05:00"
+                }],
+                "doseNumberPositiveInt": 1,
+                "seriesDosesPositiveInt": 3,
+            }]
+        };
+
+        var imuEvaluationObj = {
+            "resourceType": "ImmunizationEvaluation",
+            "status": "completed",
+            "patient": {
+                "reference": "Patient/2979043"
+            },
+            "date": "2015-02-09T11:04:15.817-05:00",
+            "authority": {
+                "reference": "Organization/hl7"
+            },
+            "targetDisease": {
+                "coding": [{
+                    "system": "http://snomed.info/sct",
+                    /*"code": "1857005",*/
+                    "display": "covid"
+                }]
+            },
+            /*"immunizationEvent": {
+                "reference": "Immunization/example"
+            },*/
+            "doseStatus": {
+                "coding": [{
+                    "system": "http://terminology.hl7.org/CodeSystem/immunization-evaluation-dose-status",
+                    "code": "valid",
+                    "display": "Valid"
+                }]
+            },
+            /*"series": "Vaccination Series 1",*/
+            "doseNumberPositiveInt": "",
+
+            "seriesDosesPositiveInt": ""
+        };
+
+        var imuObj = {
+            "resourceType": "Immunization",
+
+            "identifier": [{
+                "system": "urn:ietf:rfc:3986",
+                "value": "urn:oid:1.3.6.1.4.1.21367.2005.3.7.1234"
+            }],
+            "status": "completed",
+            "vaccineCode": {
+                "coding": [{
+                    "system": "https://www.cdc.gov.tw",
+                    "code": "CoV_AZ" /*疫苗的代碼*/
+                }],
+                "display": "AZD1222" /*疫苗的名稱*/
+            },
+            "patient": {
+                "reference": "Patient/example" /*病患的資料*/
+            },
+            "occurrenceDateTime": "2013-01-10",
+            /*施打日期*/
+            "location": {
+                /*"reference": "Organization/3749",*/
+                "display": "吉安鄉衛生所" /*施打地點*/
+            },
+            "manufacturer": {
+                "display": "AZ3" /*製造商*/
+            },
+            "lotNumber": "AAJN11K",
+            /*疫苗的批號*/
+            "performer": {
+                "actor": [{
+                    "reference": "Practitioner/",
+                    "display": ""
+                }],
+                "address": {
+                    "country": "Taiwan"
+                }
+            },
+            "protocolApplied": {
+                "targetDisease": [ /*目標疾病*/ {
+                    "coding": [{
+                        "system": "http://snomed.info/sct",
+                        "code": "40468003"
+                    }]
+                }],
+                "doseNumberPositiveInt": "第劑",
+                /*劑別*/
+                "seriesDosesPositiveInt": "1" /*完整劑數*/
+
+            }
+        }
+
+
+        function postimuRecommendation() {
+            imuRecommendationObj.patient.reference = "Patient/" + document.getElementById("patientid").value;
+            //myObj.subject.display = document.getElementById("name").value; 
+            imuRecommendationObj.recommendation[0].vaccineCode[0].coding[0].code = document.getElementById("vaccinecode").value;
+            imuRecommendationObj.recommendation[0].vaccineCode[0].coding[0].display = document.getElementById("immunizationname").value;
+            imuRecommendationObj.recommendation[0].forecastStatus.text = document.getElementById("recommendstatus").value;
+            imuRecommendationObj.recommendation[0].doseNumberPositiveInt = document.getElementById("cc").value;
+            imuRecommendationObj.recommendation[0].seriesDosesPositiveInt = document.getElementById("allnumber").value;
+            imuRecommendationObj.recommendation[0].dateCriterion[0].value = document.getElementById("earliestDate").value;
+            imuRecommendationObj.recommendation[0].dateCriterion[1].value = document.getElementById("recommendDate").value;
+            imuRecommendationObj.recommendation[0].dateCriterion[2].value = document.getElementById("overdueDate").value;
+
+            var jsonStr = JSON.stringify(imuRecommendationObj);
+            //alert(jsonStr);
+            var apiURL;
+            apiURL = FHIRrootURL + '/' + "ImmunizationRecommendation";
+            HTTPPostData(apiURL, jsonStr);
+        }
+
+        function postImuEvaluation() {
+            imuEvaluationObj.patient.reference = "Patient/" + document.getElementById("patientid2").value;
+            //myObj.subject.display = document.getElementById("name").value; 
+            imuEvaluationObj.date = document.getElementById("imuevadate").value;
+            imuEvaluationObj.authority.reference = "Organization/" + document.getElementById("imuevadoctor").value;
+            imuEvaluationObj.targetDisease.coding[0].display = document.getElementById("imuevadisease").value;
+            if (document.getElementById("imueva1").checked == true) {
+                imuEvaluationObj.doseStatus.coding[0].code = "valid";
+                imuEvaluationObj.doseStatus.coding[0].display = "valid";
+            } else if (document.getElementById("imueva0").checked == true) {
+                imuEvaluationObj.doseStatus.coding[0].code = "not valid";
+                imuEvaluationObj.doseStatus.coding[0].display = "not valid";
+            }
+            imuEvaluationObj.doseNumberPositiveInt = document.getElementById("imuevanum").value;
+            imuEvaluationObj.seriesDosesPositiveInt = document.getElementById("imuevaallnumber").value;
+
+            var jsonStr = JSON.stringify(imuEvaluationObj);
+            //alert(jsonStr);
+            var apiURL;
+            apiURL = FHIRrootURL + '/' + "ImmunizationEvaluation";
+            HTTPPostData(apiURL, jsonStr);
+        }
+
+        function postImmunization() {
+            imuObj.patient.reference = "Patient/" + document.getElementById("patientid3").value;
+            //myObj.subject.display = document.getElementById("name").value; 
+            imuObj.protocolApplied.targetDisease[0].coding[0].code = document.getElementById("a1").value;
+            imuObj.vaccineCode.coding[0].code = document.getElementById("vaccinecode").value;
+            imuObj.vaccineCode.display = document.getElementById("immunizationname").value;
+            imuObj.manufacturer.dispay = document.getElementById("manufacturer1").value;
+            imuObj.protocolApplied.doseNumberPositiveInt = document.getElementById("cc").value;
+            imuObj.protocolApplied.seriesDosesPositiveInt = document.getElementById("allnumber").value;
+            imuObj.lotNumber = document.getElementById("lotnumber").value;
+            imuObj.occurrenceDateTime = document.getElementById("occurrenceDate").value;
+            imuObj.location.display = document.getElementById("location1").value;
+            imuObj.performer.actor[0].reference = "Practitioner/" + document.getElementById("medicalpersonnel").value;
+            // imuObj.performer.actor[0].display = document.getElementById("medicalpersonnel").value;
+            imuObj.performer.address.country = document.getElementById("country1").value;
+
+            var jsonStr = JSON.stringify(imuObj);
+            //alert(jsonStr);
+            var apiURL;
+            apiURL = FHIRrootURL + '/' + "Immunization";
+            HTTPPostData(apiURL, jsonStr);
+        }
+
+        var allowCreate = 0; //allowCreate=3 to enable create button
+        /* if (localStorage.getItem("practitionerid") != null) {
+            document.getElementById("practitionerid").value = localStorage.getItem("practitionerid");
+        }*/
+
+        function searchImmunization() {
+            var imuid = document.getElementById("imuid").value;
+            var apiURL = FHIRrootURL + '/Immunization/' + imuid;
+            //clearAllTextbox();
+            HTTPGetData(apiURL, manageResponseRet, 1)
+        }
+
+        function manageResponseRet() {
+            var aa = document.getElementById("imuid").value;
+            //document.getElementById("imuid").value = ret;
+
+            if (JSON.parse(ret).id != aa) {
+                alert("Immunization not found!");
+            } else {
+                //allowCreate++;
+                //document.getElementById("imuid").value = JSON.parse(ret).id;
+                //localStorage.setItem("fhirImmun", ret);
+
+                //get patient ID and resource
+                //var idFHIR = JSON.parse(ret).patient.reference;
+                //var apiURL = FHIRrootURL + '/' + idFHIR;
+                //HTTPGetData(apiURL, manageResponseRet, 2);
+                window.open("e4.html");
+            }
+        }
+    </script>
+</head>
+
+<body style="height:780px" align="center">
+    <p>
+        <h1><b><center>EHR System</center></b></h1>
+    </p>
+    <!--<table id="mytable" style="border:3px #FFAC55 dashed;padding:5px;" rules="all" cellpadding='5' ;>--->
+    <table id="mytable">
+        <tr>
+            <td>
+                &nbsp;
+                <h3><b>Create ImmunizationEvaluation</b></h3><br><br>
+            </td>
+        </tr>
+        <tr>
+            <td>&emsp;&emsp;&emsp; PatientID：
+                <input type="text" id="patientid2">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br>疫苗評估日期：
+                <input type="date" id="imuevadate">&emsp;&emsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br>&emsp;疫苗評估地點ID：
+                <input type="text" id="imuevadoctor">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br>&emsp;&emsp;&emsp;&emsp;目標疾病：
+                <input type="text" id="imuevadisease">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br>可以施打疫苗： 是
+                <input type="radio" name="imueva01" id="imueva1">&emsp;否
+                <input type="radio" name="imueva01" id="imueva0">&emsp;&emsp;&nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br>劑別：&emsp;<input type="number" id="imuevanum" max="3" min="1">&emsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br> 完整劑數：
+                <input type="number" id="imuevaallnumber" max="5" min="1">&nbsp;&emsp;&nbsp;&emsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br><input id="btnImmunizationEvaluation" onclick="postImuEvaluation()" type="button" value="postData" />
+            </td>
+        </tr>
+    </table><br><br>
+    <!--<table id="mytable2" style="border:3px #FFAC55 dashed;padding:5px;" rules="all" cellpadding='5' ;>-->
+</body>
+
+</html>
+
+</html>

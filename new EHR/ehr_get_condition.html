@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <style type="text/css">
+        button {
+            height: 43px;
+            width: 140px;
+        }
+        
+        textarea {
+            height: 400px;
+            width: 98%;
+        }
+        
+        #myTable {
+            width: 100%;
+        }
+    </style>
+    <script src="setting.js"></script>
+    <script src="HTTP2019_bundle.js"></script>
+</head>
+
+<body style="height: 780px">
+    <input id="btnSearch" onclick="searchpat()" type="button" value="搜尋Condition" /> &nbsp;&nbsp;&nbsp;&nbsp;
+    <!--<input id="btnSearch" onclick="searchImmun()" type="button" value="Search Immunization" /> &nbsp;&nbsp;&nbsp;&nbsp;-->
+    <input id="btnCreate" onclick="createDocument()" type="button" value="產生BundleID" disabled/> &nbsp;&nbsp;&nbsp;&nbsp;
+    <!--<input id="btnCreate" onclick="createDocument()" type="button" value="Create Immunization Certificate" disabled/> &nbsp;&nbsp;&nbsp;&nbsp;
+    <!--<input id="btnCreateRes" onclick="createResource()" type="button" value="Create Organization / Patient /  Certificate" />-->
+    <br><br>
+    <table id="myTable">
+        <tr>
+            <td>
+                Patient<br> ID: <input type="text" id="patID" placeholder="ex. 2461" />
+            </td>
+            <td>
+                Condition<br> ID: <input type="text" id="conID" readonly />
+            </td>
+            <td>
+                Organization<br> ID: <input type="text" id="orgID" readonly />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <textarea id="tapat" name="S1" readonly></textarea>
+            </td>
+            <td>
+                <textarea id="tacon" name="S1" readonly></textarea>
+            </td>
+            <td>
+                <textarea id="taOrg" name="S1" readonly></textarea>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        var allowCreate = 0; //allowCreate=3 to enable create button
+
+        if (localStorage.getItem("patID") != null) {
+            document.getElementById("patID").value = localStorage.getItem("patID");
+        }
+
+        /*function createResource() {
+            window.open("create_org_patient_immun.html", '_blank');
+        }*/
+
+        function clearAllTextbox() {
+            var elements = document.getElementsByTagName("input");
+            for (var i = 0; i < elements.length; i++) {
+                if (elements[i].type == "text") {
+                    elements[i].value = "";
+                }
+            }
+
+            elements = document.getElementsByTagName("textarea");
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].value = "";
+            }
+
+            allowCreate = 0;
+            document.getElementById("btnCreate").disabled = true;
+        }
+
+        function postData(resource, dataString, count) {
+            var apiURL = FHIRrootURL + '/' + resource;
+            HTTPPostData(apiURL, dataString, manageResponseRet, count);
+        }
+
+        function searchpat() {
+            var patID = document.getElementById("patID").value;
+            var apiURL = FHIRrootURL + '/Patient/' + patID;
+            clearAllTextbox();
+            HTTPGetData(apiURL, manageResponseRet, 1);
+        }
+
+
+        function manageResponseRet(count, ret) { // alert(ret);
+            if (count === 1) {
+                //display Immunization resource
+                document.getElementById("tapat").value = ret;
+
+                if (JSON.parse(ret).resourceType != "Patient") {
+                    alert("Patient not found!");
+                } else {
+                    allowCreate++;
+                    document.getElementById("patID").value = JSON.parse(ret).id;
+                    localStorage.setItem("fhirPatient", ret);
+
+                    //get patient ID and resource
+                    //var idFHIR = JSON.parse(ret).patient.reference;
+                    //var apiURL = FHIRrootURL + '/' + idFHIR;
+                    HTTPGetData(apiURL, manageResponseRet, 2);
+                }
+            } else if (count === 2) {
+                //display Patient resource
+                document.getElementById("tacon").value = ret;
+
+                if (JSON.parse(ret).resourceType != "Condition") {
+                    alert("Condition not found!");
+                } else {
+                    allowCreate++;
+                    document.getElementById("conID").value = JSON.parse(ret).id;
+                    localStorage.setItem("fhirCondition", ret);
+
+                    //get managingOrganization ID and resource
+                    var idFHIR = JSON.parse(ret).subject.reference;
+                    /*var idFHIR = JSON.parse(ret).managingOrganization.reference;*/
+                    var apiURL = FHIRrootURL + '/Condition=?patient' + idFHIR;
+                    HTTPGetData(apiURL, manageResponseRet, 3);
+                }
+            } else if (count === 3) {
+                //display Organization resource
+                document.getElementById("taOrg").value = ret;
+
+                if (JSON.parse(ret).resourceType != "Organization") {
+                    alert("Organization not found!");
+                } else {
+                    allowCreate++;
+                    document.getElementById("orgID").value = JSON.parse(ret).id;
+                    localStorage.setItem("fhirOrg", ret);
+                }
+
+                //enable create button if immunization, patient, and organization resource exist
+                if (allowCreate === 3) {
+                    document.getElementById("btnCreate").disabled = false;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

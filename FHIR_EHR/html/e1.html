@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <style type="text/css">
+        button {
+            height: 43px;
+            width: 140px;
+        }
+        
+        textarea {
+            height: 400px;
+            width: 98%;
+        }
+        /*#y1 {
+            position: absolute;
+            width: 400px;
+            height: 80px;
+            border: none;
+        }*/
+        
+        #mytable {
+            width: 100%;
+        }
+        
+        textarea {
+            height: 100%;
+            /*高度填充*/
+            width: 50%;
+            padding: 0;
+            /*防止textarea超過td邊框*/
+            vertical-align: bottom;
+            /*chrome的td有margin-top情況 用此CSS調整*/
+            /*border: none; /*border用td的*/
+        }
+    </style>
+    <script src="../../new EHR/setting.js"></script>
+    <script src="../../new EHR/HTTP2019.js"></script>
+
+    <script>
+        var organizationObj = {
+            "resourceType": "Organization",
+            "active": true,
+            "type": [{
+                "coding": [{
+                    "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                    "code": "prov",
+                    "display": "Healthcare Provider"
+                }]
+            }],
+            "name": "Oxford Hospital",
+            "telecom": [{
+                "system": "phone",
+                "value": "911"
+            }],
+            "address": [{
+                "text": "21, Washington Street"
+            }],
+            "contact": [{
+                "name": {
+                    "text": "Mina"
+                },
+                "telecom": [{
+                    "system": "phone",
+                    "value": "0965123777"
+                }, {
+                    "system": "email",
+                    "value": "mina@gmail.com"
+                }]
+            }]
+        };
+        var organizationObj2 = {
+            "resourceType": "Organization",
+            "active": true,
+            "type": [{
+                "coding": [{
+                    "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                    "code": "prov",
+                    "display": "Healthcare Provider"
+                }]
+            }],
+            "name": "Oxford Hospital",
+            /*"telecom": [{
+                "system": "phone",
+                "value": "911"
+            }],*/
+            "contact": [{
+                "name": {
+                    "text": "家庭醫學科"
+                },
+                "telecom": [{
+                    "system": "phone",
+                    "value": "0965123777"
+                }]
+            }],
+            "partOf": {
+                "reference": "Organization/ex"
+            }
+        };
+
+        var practitionerObj = {
+            "resourceType": "Practitioner",
+            "active": true,
+            "name": [{
+                "text": [
+                    "Elon Musk"
+                ]
+            }],
+            "qualification": [{
+                "issuer": {
+                    "reference": "Organization/ex"
+                } // Organization that regulates and issues the qualification
+            }],
+        };
+
+        function postOrganization() {
+            organizationObj.name = document.getElementById("medicalplace").value;
+            organizationObj.telecom[0].value = document.getElementById("medicalphone").value;
+            organizationObj.address[0].text = document.getElementById("medicaladdress").value;
+            organizationObj.contact[0].name.text = document.getElementById("contactname").value;
+            //organizationObj.contact[0].telecom[1].value = document.getElementById("contactemail").value;
+            organizationObj.contact[0].telecom[0].value = document.getElementById("contactphone").value;
+
+            alert("aaa");
+
+            var jsonStr = JSON.stringify(organizationObj);
+            //alert(jsonStr);
+            var apiURL;
+            apiURL = FHIRrootURL + '/' + "Organization";
+            HTTPPostData(apiURL, jsonStr);
+        }
+
+        function postOrganization2() {
+            organizationObj2.partOf.reference = "Organization/" + document.getElementById("medicalplace2").value;
+            organizationObj2.contact[0].name.text = document.getElementById("medicalname2").value;
+            organizationObj2.name = document.getElementById("medicalname2").value;
+            organizationObj2.contact[0].telecom[0].value = document.getElementById("medicalphone2").value;
+
+            alert("aaa");
+
+            var jsonStr = JSON.stringify(organizationObj2);
+            //alert(jsonStr);
+            var apiURL;
+            apiURL = FHIRrootURL + '/' + "Organization";
+            HTTPPostData(apiURL, jsonStr);
+        }
+
+
+        function postPractitioner() {
+            practitionerObj.name[0].text = document.getElementById("practitionername").value;
+            /*這是可以的
+            /*var practitionerName = personObj.name[0].text;
+            document.getElementById("practitionername").value = practitionerName;*/
+            practitionerObj.qualification[0].issuer.reference = document.getElementById("orgid").value;
+
+
+            alert("aaa");
+
+            var jsonStr = JSON.stringify(practitionerObj);
+            //alert(jsonStr);
+            var apiURL;
+            apiURL = FHIRrootURL + '/' + "Practitioner";
+            HTTPPostData(apiURL, jsonStr);
+        }
+    </script>
+</head>
+
+<body style="height:780px">
+
+    <p>
+        <h1><b><center>EHR System</center></b></h1>
+    </p>
+
+    <table id="mytable">
+        <tr>
+            <td>
+                &nbsp;<b>Create Organization(父組織)</b><br><br>
+            </td>
+            <td>
+                &nbsp;<b>Create Organization(子組織)</b><br><br>
+            </td>
+            <td>
+                &nbsp;<b>Create Practitioner</b><br><br>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <!--organization-->
+                醫療院所名稱： &emsp;&emsp;
+                <input type="text" id="medicalplace"></input>
+            </td>
+            <td>
+                <!--organization2-->
+                醫療院所ID： &emsp;&emsp;
+                <input type="text" id="medicalplace2"></input>
+            </td>
+            <td>
+                您的姓名：&emsp;
+                <input type="text" id="practitionername">
+                <!--practitioner-->
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <!--orgaanization-->
+                <br>醫療院所電話：&emsp;&emsp;
+                <input type="text" id="medicalphone">
+            </td>
+            <td>
+                <!--orgaanization2-->
+                <br>科別名稱：&emsp;&emsp;&emsp;
+                <input type="text" id="medicalname2">
+            </td>
+            <td><br>所屬科別ID：
+                <input type="text" id="orgid">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <!--organization-->
+                <br>醫療院所地址：&emsp;&emsp;
+                <textarea id="medicaladdress"></textarea>
+            </td>
+            <td>
+                <!--orgaanization2-->
+                <br>科別電話：&emsp;&emsp;&emsp;
+                <input type="text" id="medicalphone2">
+            </td>
+            <td>
+
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <!--organization-->
+                <br>醫療院所聯絡人：&emsp;
+                <input type="text" id="contactname">
+            </td>
+            <td>
+                <!--organization2-->
+                <br><input id="btnotganization2" onclick="postOrganization2()" type="button" value="postData" />
+            </td>
+            <td>
+                <br>
+                <input id="btnpractitioner" onclick="postPractitioner()" type="button" value="postData" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <!--organization-->
+                <br>醫療院所聯絡電話：
+                <input type="text" id="contactphone">
+            </td>
+            <td>
+            </td>
+        </tr>
+
+            <td>
+                <!--organization-->
+                <br><input id="btnotganization" onclick="postOrganization()" type="button" value="postData" />
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>
